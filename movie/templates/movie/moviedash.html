@@ -1,0 +1,82 @@
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        gap: 20px;
+        margin: 20px;
+        text-align: center;
+
+    }
+    li {
+        list-style: none;
+    }
+
+    .container-child {
+        border: 2px solid red;
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    .btn {
+        padding: 5px 17px;
+        border-radius: 4px;
+    }
+
+    .btn:hover {
+        border-color: aqua;
+    }
+
+    .header-title {
+        font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+<div>
+    <div style="display: flex; justify-content: space-between;margin: 0 30px">
+        <h2 class="header-title">Top Movies</h2>
+        <a href="{% url 'recommend2' %}">
+            <img width="75" height="75"
+                 src="https://thumbs.dreamstime.com/b/highly-recommended-rubber-stamp-grunge-design-dust-scratches-effects-can-be-easily-removed-clean-crisp-look-color-85912530.jpg">
+        </a>
+    </div>
+
+    <ul class="container">
+        {% for i in movies %}
+            <li class="container-child">
+                <img alt="has been image here" src="{{ i.image_url }}" width="210" height="290">
+                <h2>{{ i.title }}</h2>
+                <p>{{ i.description }}</p>
+                <button class="btn" onclick="likeMovie({{ i.id }})">Like</button>
+                <button class="btn" onclick="unlikeMovie({{ i.id }})">Unlike</button>
+                <hr>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function likeMovie(id) {
+        fetch(`/like/${id}/`)
+            .then(res => res.json())
+            .then(data => {
+                alert("Liked!");
+                console.log(data);
+            });
+    }
+
+    function unlikeMovie(id) {
+        fetch(`/unlike/${id}/`)
+            .then(res => res.json())
+            .then(data => {
+                alert("Unliked!");
+                console.log(data);
+            });
+    }
+</script>

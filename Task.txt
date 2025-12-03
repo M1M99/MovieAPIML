@@ -1,0 +1,11 @@
+Ichinde 60 film datasi olan excel var siz onu excelden oxumalisiniz ve
+ django appda gostermelisiniz sonra ise like sistemi olmalidi ve like
+ etdiyiniz filmlere gore o size meslehet vermelidir ki size uygun filmler ,
+ Recommendation sistem istifade olunsun
+
+1.Kinolari goster title,description , image
+2.Like Etmek , ve Chixarmaq
+3.Uygun filmleri chixarmaq
+
+Kinoya uygun shekillerin linkleri ishlemeye biler ozunuz google dan url
+tapin duzgun url qoyun sonra bashlayin taska
