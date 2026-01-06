@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="md:flex">
+        <div class="md:w-1/2 relative h-96 md:h-auto">
+            <img
+                src="{{ movie.image_url }}"
+                alt="{{ movie.title }}"
+                class="absolute inset-0 w-full h-full object-cover"
+                onerror="this.onerror=null; this.src='https://designyoutrust.com/wp-content/uploads/2016/02/2-161.jpg';"
+            >
+            <div class="absolute inset-0 bg-black opacity-10 md:hidden"></div>
+        </div>
+
+        <div class="p-8 md:w-1/2 flex flex-col justify-center">
+            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">Movie Details</div>
+            <h1 class="block mt-1 text-3xl leading-tight font-extrabold text-gray-900">{{ movie.title }}</h1>
+
+            <p class="mt-4 text-gray-600 text-lg leading-relaxed">
+                {{ movie.description }}
+            </p>
+
+            <div class="mt-8 flex items-center space-x-4">
+                <button
+                    onclick="toggleLike({{ movie.id }}, 'like')"
+                    class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-indigo-700 transition transform hover:-translate-y-1">
+                    Like Movie
+                </button>
+                <a href="{% url 'get_movies' %}" class="text-gray-500 hover:text-gray-900 font-medium">
+                    Back to list
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto mt-12">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">You might also like</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-gray-100 h-40 rounded flex items-center justify-center text-gray-400 text-sm">
+            Coming Soon
+        </div>
+        <div class="bg-gray-100 h-40 rounded flex items-center justify-center text-gray-400 text-sm">
+            Coming Soon
+        </div>
+    </div>
+</div>
+{% endblock %}

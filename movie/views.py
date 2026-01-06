@@ -11,13 +11,13 @@ from movie.utils.recommed import get_recommendations_from_liked
 def get_movies(request):
     movies = Movie.objects.all()
     serializer = MovieSerializer(movies, many=True)
-    return render(request, "movie/moviedash.html", {"movies": serializer.data})
+    return render(request, "movie/index.html", {"movies": serializer.data})
 
 
 
 
 def post_all_movie(request):
-    excel_path = os.path.join(settings.BASE_DIR, "real_movies_sample.xlsx")
+    excel_path = os.path.join(settings.BASE_DIR, "real_movies_sample1.xlsx")
 
     if not os.path.exists(excel_path):
         return HttpResponse("Excel file not found.", status=404)
@@ -36,7 +36,7 @@ def post_all_movie(request):
 
 def recommendations(request):
     recs = get_recommendations_from_liked(request.user)
-    return render(request, "movie/recommendations.html", {"movies": recs})
+    return render(request, "movie/recommendationspages.html", {"movies": recs})
 
 
 
@@ -72,3 +72,18 @@ def recommendations2(request):
 
     serializer = MovieSerializer(recs, many=True)
     return render(request, "movie/recommendations.html", {"movies": serializer.data})
+
+
+
+def clear_liked_movies(request):
+    liked_ids = request.session.get("liked_movies", [])
+    if liked_ids:
+        del request.session["liked_movies"]
+
+    return HttpResponse("Successfully cleared liked movies!")
+
+
+def movie_details(request, movie_id):
+    movie = Movie.objects.get(id=movie_id)
+    serializer = MovieSerializer(movie)
+    return render(request, "movie/detail.html", {"movie": serializer.data})

@@ -1,3 +1,4 @@
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2503/2503508.png">
 <style>
     .container {
         display: grid;
@@ -50,7 +51,9 @@
     <ul class="container">
         {% for i in movies %}
             <li class="container-child">
-                <img alt="has been image here" src="{{ i.image_url }}" width="210" height="290">
+                <img alt="has been image here" src="{{ i.image_url }}" width="210" height="290"
+            onerror="this.onerror=null; this.src='https://designyoutrust.com/wp-content/uploads/2016/02/2-161.jpg';"
+                >
                 <h2>{{ i.title }}</h2>
                 <p>{{ i.description }}</p>
                 <button class="btn" onclick="likeMovie({{ i.id }})">Like</button>

@@ -1,0 +1,16 @@
+<footer class="bg-gray-800 text-gray-300 py-8 mt-auto">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+            <h3 class="text-lg font-bold text-white">MovieAPIML</h3>
+            <p class="text-sm">Intelligent Recommendations.</p>
+        </div>
+        <div class="flex space-x-6 text-sm">
+            <a href="#" class="hover:text-white transition">Privacy Policy</a>
+            <a href="#" class="hover:text-white transition">Terms of Service</a>
+            <a href="{% url 'clear_liked_movies' %}" class="text-red-400 hover:text-red-300 transition">Reset Preferences</a>
+        </div>
+    </div>
+    <div class="text-center text-xs text-gray-500 mt-8">
+        &copy; {% now "Y" %} MovieAPIML Project. All rights reserved.
+    </div>
+</footer>

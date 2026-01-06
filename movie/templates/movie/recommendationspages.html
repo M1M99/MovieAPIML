@@ -1,0 +1,39 @@
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2503/2503508.png">
+<style>
+
+    body {
+        font-family: "Roboto Light", "Ubuntu Light", "Ubuntu", monospace;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0 20px;
+        align-items: center;
+    }
+</style>
+<div class="container">
+    <a href="{% url 'get_movies' %}">
+        <h1>Top Movies</h1>
+    </a>
+    <h2>Recommended For You</h2>
+</div>
+<ul>
+    {% for movie in movies %}
+        <li>
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.description }}</p>
+            <img src="{{ movie.image_url }}" width="200" height="260" onerror="this.onerror=null; this.src='https://designyoutrust.com/wp-content/uploads/2016/02/2-161.jpg';" />
+ />
+        </li>
+    {% endfor %}
+</ul>

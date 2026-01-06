@@ -11,4 +11,7 @@ urlpatterns = [
 
     path("like/<int:movie_id>/", views.like_movie, name="like_movie"),
     path("unlike/<int:movie_id>/", views.unlike_movie, name="unlike_movie"),
+    path('clear_liked_movies/', views.clear_liked_movies, name='clear_liked_movies'),
+   path('details/<int:movie_id>/', views.movie_details, name='movie_details'),
+
 ]

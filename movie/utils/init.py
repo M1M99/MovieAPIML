@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = "Load movies from XLSX"
 
     def handle(self, *args, **kwargs):
-        df = pd.read_excel("real_movies_sample.xlsx")
+        df = pd.read_excel("real_movies_sample1.xlsx")
 
         for _, row in df.iterrows():
             Movie.objects.get_or_create(

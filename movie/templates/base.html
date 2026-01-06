@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MovieAPIML{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    {% include 'partials/navbar.html' %}
+
+    <main class="flex-grow container mx-auto px-4 py-8 relative">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'partials/footer.html' %}
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        // --- 1. Toast Notification ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `${colors} text-white px-6 py-3 rounded shadow-lg transform transition-all duration-300 translate-y-10 opacity-0`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- 2. Like/Unlike Logic (Backend) ---
+        async function toggleLike(movieId, action) {
+            const url = action === 'like' ? `/like/${movieId}/` : `/unlike/${movieId}/`;
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    showToast(action === 'like' ? 'Movie Liked!' : 'Movie Unliked!', 'success');
+                    updateUIState(movieId, action === 'like'); // UI-ı dərhal yenilə
+                } else {
+                    showToast('Something went wrong', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Network error', 'error');
+            }
+        }
+
+        // --- 3. SPA Navigation Logic (Section Switching) ---
+        let currentDetailId = null;
+
+        function navigateToDetail(id) {
+            const listSection = document.getElementById('section-list');
+            const detailSection = document.getElementById('section-detail');
+            const dataDiv = document.getElementById(`data-${id}`);
+
+            // Əgər bu elementlər səhifədə yoxdursa (məsələn başqa səhifədəyik), dayandır
+            if (!listSection || !detailSection || !dataDiv) return;
+
+            currentDetailId = id;
+
+            // Datanı oxu
+            const title = dataDiv.querySelector('.d-title').innerText;
+            const img = dataDiv.querySelector('.d-img').innerText;
+            const desc = dataDiv.querySelector('.d-desc').innerText;
+            const isLiked = dataDiv.querySelector('.d-liked').innerText.trim() === 'true';
+
+            // Detal bölməsini doldur
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-desc').innerText = desc;
+            document.getElementById('detail-img').src = img;
+
+            // Düymələri tənzimlə
+            configureDetailButtons(id, isLiked);
+
+            // Səhifələri dəyiş
+            listSection.classList.add('hidden');
+            detailSection.classList.remove('hidden');
+
+            // URL-i dəyiş (Refreshsiz)
+            const newUrl = `${window.location.pathname}?movie=${id}`;
+            window.history.pushState({ page: 'detail', id: id }, '', newUrl);
+            window.scrollTo(0, 0);
+        }
+
+        function navigateHome() {
+            const listSection = document.getElementById('section-list');
+            const detailSection = document.getElementById('section-detail');
+
+            if(listSection && detailSection) {
+                detailSection.classList.add('hidden');
+                listSection.classList.remove('hidden');
+            }
+
+            window.history.pushState({ page: 'list' }, '', window.location.pathname);
+            currentDetailId = null;
+        }
+
+        // Detal səhifəsindəki düymələri hazırlayır
+        function configureDetailButtons(id, isLiked) {
+            const likeBtn = document.getElementById('btn-detail-like');
+            const unlikeBtn = document.getElementById('btn-detail-unlike');
+
+            if (!likeBtn || !unlikeBtn) return;
+
+            // Görünüşü yenilə
+            if (isLiked) {
+                likeBtn.classList.add('hidden');
+                unlikeBtn.classList.remove('hidden');
+            } else {
+                likeBtn.classList.remove('hidden');
+                unlikeBtn.classList.add('hidden');
+            }
+
+            // Klik hadisələrini təyin et
+            likeBtn.onclick = () => toggleLike(id, 'like');
+            unlikeBtn.onclick = () => toggleLike(id, 'unlike');
+        }
+
+        // Bütün düymələri (List və Detal) sinxronlaşdırır
+        function updateUIState(id, isLiked) {
+            // 1. Detal səhifəsi (əgər açıqdırsa)
+            const dLike = document.getElementById('btn-detail-like');
+            const dUnlike = document.getElementById('btn-detail-unlike');
+
+            if (currentDetailId === id && dLike && dUnlike) {
+                if(isLiked) { dLike.classList.add('hidden'); dUnlike.classList.remove('hidden'); }
+                else { dLike.classList.remove('hidden'); dUnlike.classList.add('hidden'); }
+            }
+
+            // 2. List səhifəsi
+            const listLike = document.getElementById(`btn-list-like-${id}`);
+            const listUnlike = document.getElementById(`btn-list-unlike-${id}`);
+            if (listLike && listUnlike) {
+                if(isLiked) { listLike.classList.add('hidden'); listUnlike.classList.remove('hidden'); }
+                else { listLike.classList.remove('hidden'); listUnlike.classList.add('hidden'); }
+            }
+
+            // 3. Gizli datanı yenilə (Yaddaş üçün)
+            const dataDiv = document.getElementById(`data-${id}`);
+            if(dataDiv) {
+                dataDiv.querySelector('.d-liked').innerText = isLiked ? 'true' : 'false';
+            }
+        }
+
+        // Browser Back Button Handler
+        window.onpopstate = function(event) {
+            if (event.state && event.state.page === 'detail') {
+                navigateToDetail(event.state.id);
+            } else {
+                navigateHome();
+            }
+        };
+
+        // URL Check on Load (Refresh edəndə detalda qalmaq üçün)
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('movie');
+            if (movieId) {
+                // DOM tam yüklənsin deyə kiçik gecikmə ilə yoxlayaq
+                setTimeout(() => {
+                    if (document.getElementById(`data-${movieId}`)) {
+                        navigateToDetail(parseInt(movieId));
+                    }
+                }, 50);
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
